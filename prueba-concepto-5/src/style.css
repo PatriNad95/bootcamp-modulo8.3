@@ -29,6 +29,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  justify-content: center;
 }
 
 h1 {
@@ -94,4 +95,28 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+}
+
+.carta {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  background-color: #aee2ff;
+}
+
+.carta img {
+  display: none;
+}
+
+.carta-vuelta {
+  display: flex;
+  border-radius: 10px;
+  background-color: #aa66e2;
+  padding: 10px;
 }
