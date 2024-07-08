@@ -3,6 +3,7 @@ import "./style.css";
 const carta = document.getElementById("carta");
 if (carta !== null && carta !== undefined && carta instanceof HTMLElement) {
   carta.addEventListener("click", () => {
+    carta.className = "";
     const img = document.getElementById("imagenCarta");
     if (img !== null && img !== undefined && img instanceof HTMLImageElement) {
       img.src =
