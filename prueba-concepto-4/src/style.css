@@ -109,6 +109,10 @@ button:focus-visible {
   background-color: #aee2ff;
 }
 
+.carta img {
+  display: none;
+}
+
 .carta-vuelta {
   display: flex;
   border-radius: 10px;
