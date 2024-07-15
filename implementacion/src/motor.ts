@@ -13,23 +13,24 @@ export const barajarCartas = (cartas: Carta[]): Carta[] => {
   return cartas;
 };
 
-// Funciones del motor del juego
 export const sePuedeVoltearLaCarta = (
   tablero: Tablero,
   indice: number
 ): boolean => {
   const carta = tablero.cartas[indice];
-  return (
-    !carta.estaVuelta &&
-    !carta.encontrada &&
-    (tablero.estadoPartida === "CeroCartasLevantadas" ||
-      tablero.estadoPartida === "UnaCartaLevantada")
-  );
+  return !carta.estaVuelta && !carta.encontrada;
 };
 
 export const voltearLaCarta = (tablero: Tablero, indice: number): void => {
   const carta = tablero.cartas[indice];
   carta.estaVuelta = true;
+  if (tablero.estadoPartida === "CeroCartasLevantadas") {
+    tablero.estadoPartida = "UnaCartaLevantada";
+    tablero.indiceCartaVolteadaA = indice;
+  } else {
+    tablero.estadoPartida = "DosCartasLevantadas";
+    tablero.indiceCartaVolteadaB = indice;
+  }
 };
 
 export const sonPareja = (
@@ -47,6 +48,8 @@ export const parejaEncontrada = (
 ): void => {
   tablero.cartas[indiceA].encontrada = true;
   tablero.cartas[indiceB].encontrada = true;
+  tablero.indiceCartaVolteadaA = undefined;
+  tablero.indiceCartaVolteadaB = undefined;
   tablero.estadoPartida = "CeroCartasLevantadas";
 };
 
@@ -57,6 +60,8 @@ export const parejaNoEncontrada = (
 ): void => {
   tablero.cartas[indiceA].estaVuelta = false;
   tablero.cartas[indiceB].estaVuelta = false;
+  tablero.indiceCartaVolteadaA = undefined;
+  tablero.indiceCartaVolteadaB = undefined;
   tablero.estadoPartida = "CeroCartasLevantadas";
 };
 

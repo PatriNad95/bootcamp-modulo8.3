@@ -1,4 +1,4 @@
-import { tablero } from "./model";
+import { Carta, Tablero, tablero } from "./model";
 import {
   barajarCartas,
   esPartidaCompleta,
@@ -44,8 +44,61 @@ const actualizarIntentos = () => {
   }
 };
 
+const mostrarImagen = (carta: HTMLDivElement, cartas: Carta[]) => {
+  const cartaIndice = Number(carta.getAttribute("data-indice-id"));
+  const imgElem = document.createElement("img");
+  imgElem.src = cartas[cartaIndice].imagen;
+  carta.classList.add("carta-vuelta");
+  carta.appendChild(imgElem);
+  return carta;
+};
+
+const mirarPosicionSegundaCarta = (tablero: Tablero) => {
+  const indiceA = tablero.indiceCartaVolteadaA;
+  const indiceB = tablero.indiceCartaVolteadaB;
+  if (indiceA !== undefined && indiceB !== undefined) {
+    if (sonPareja(indiceA, indiceB, tablero)) {
+      parejaEncontrada(tablero, indiceA, indiceB);
+      if (esPartidaCompleta(tablero)) {
+        alert("¡Has completado el juego!");
+        tablero.estadoPartida = "PartidaCompleta";
+      }
+    } else {
+      setTimeout(() => {
+        parejaNoEncontrada(tablero, indiceA, indiceB);
+        noMostrarImagenes(indiceA, indiceB);
+      }, 1000);
+    }
+    intentos++;
+    actualizarIntentos();
+  }
+};
+
+const noMostrarImagenes = (indiceA: number, indiceB: number) => {
+  const tableroElem = document.getElementById("tablero");
+  if (
+    tableroElem !== null &&
+    tableroElem !== undefined &&
+    tableroElem instanceof HTMLElement
+  ) {
+    const cartasElem = tableroElem.getElementsByClassName("carta");
+    eliminarImagen(cartasElem, indiceA);
+    eliminarImagen(cartasElem, indiceB);
+  } else {
+    console.log("El elemento con id tablero no es un elemento HTML");
+  }
+};
+
+const eliminarImagen = (
+  cartasElem: HTMLCollectionOf<Element>,
+  indice: number
+) => {
+  const imagen = cartasElem[indice].getElementsByTagName("img");
+  cartasElem[indice].classList.remove("carta-vuelta");
+  cartasElem[indice].removeChild(imagen[0]);
+};
+
 const renderizarTablero = () => {
-  actualizarIntentos();
   const tableroElem = document.getElementById("tablero");
   if (
     tableroElem !== null &&
@@ -53,47 +106,18 @@ const renderizarTablero = () => {
     tableroElem instanceof HTMLElement
   ) {
     tableroElem.innerHTML = "";
-    tablero.cartas.forEach((carta, index) => {
-      const cartaElem = document.createElement("div");
-      cartaElem.className =
-        carta.estaVuelta || carta.encontrada ? "carta-vuelta" : "carta";
+    tablero.cartas.forEach((_, index) => {
+      let cartaElem = document.createElement("div");
+      cartaElem.classList.add("carta");
       cartaElem.setAttribute("data-indice-id", index.toString());
-      const imgElem = document.createElement("img");
-      imgElem.classList.add("imagenCarta");
-      imgElem.src = carta.imagen;
-      cartaElem.appendChild(imgElem);
       tableroElem.appendChild(cartaElem);
 
       cartaElem.addEventListener("click", () => {
         if (sePuedeVoltearLaCarta(tablero, index)) {
           voltearLaCarta(tablero, index);
-          renderizarTablero();
-          if (
-            tablero.estadoPartida === "UnaCartaLevantada" &&
-            tablero.indiceCartaVolteadaA !== undefined
-          ) {
-            intentos++;
-            actualizarIntentos();
-            tablero.estadoPartida = "DosCartasLevantadas";
-            const indiceA = tablero.indiceCartaVolteadaA;
-            const indiceB = index;
-            if (sonPareja(indiceA, indiceB, tablero)) {
-              parejaEncontrada(tablero, indiceA, indiceB);
-            } else {
-              setTimeout(() => {
-                parejaNoEncontrada(tablero, indiceA, indiceB);
-                renderizarTablero();
-              }, 1000);
-            }
-            if (esPartidaCompleta(tablero)) {
-              alert("¡Has completado el juego!");
-              tablero.estadoPartida = "PartidaCompleta";
-            }
-          } else {
-            tablero.estadoPartida = "UnaCartaLevantada";
-            tablero.indiceCartaVolteadaA = index;
-          }
-        } else if (tablero.cartas[index].estaVuelta) {
+          mostrarImagen(cartaElem, tablero.cartas);
+          mirarPosicionSegundaCarta(tablero);
+        } else {
           alert("Esta carta ya está volteada.");
         }
       });

@@ -112,7 +112,8 @@ button:focus-visible {
 }
 
 .carta img {
-  display: none;
+  width: 130px;
+  height: 130px;
 }
 
 .carta:hover {
@@ -121,9 +122,9 @@ button:focus-visible {
 
 .carta-vuelta {
   display: flex;
-  border-radius: 10px;
   background-color: #aa66e2;
-  padding: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .no-mostrar {
